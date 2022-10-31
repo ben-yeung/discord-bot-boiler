@@ -1,5 +1,6 @@
 const Discord = require("discord.js");
 const { SlashCommandBuilder } = require("@discordjs/builders");
+const botconfig = require("../botconfig.json");
 
 module.exports = {
   data: new SlashCommandBuilder().setName("help").setDescription("Get the list of current commands."),
@@ -17,7 +18,7 @@ module.exports = {
       .setFooter({
         text: "Created with ❤️ by ben#0673",
       })
-      .setColor(44774)
+      .setColor(botconfig.COLOR_SCHEME)
       .setTimestamp();
 
     return interaction.reply({ embeds: [embed], ephemeral: true });
