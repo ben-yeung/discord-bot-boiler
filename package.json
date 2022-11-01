@@ -1,7 +1,7 @@
 {
-  "name": "os-floor-bot",
+  "name": "discord-bot",
   "version": "1.0.0",
-  "description": "Discord.js v13 bot focused on monitoring OpenSea collections",
+  "description": "Discord.js v13 bot focused on ...",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -9,14 +9,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ben-yeung/OS-floor-bot.git"
+    "url": ""
   },
   "author": "Ben Yeung",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/ben-yeung/OS-floor-bot/issues"
-  },
-  "homepage": "https://github.com/ben-yeung/OS-floor-bot#readme",
   "dependencies": {
     "@discordjs/builders": "^0.13.0",
     "@discordjs/rest": "^0.4.1",
