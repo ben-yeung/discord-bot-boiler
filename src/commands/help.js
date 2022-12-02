@@ -1,6 +1,7 @@
 const Discord = require("discord.js");
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const botconfig = require("../botconfig.json");
+const { MessageButton, MessageActionRow } = require("discord.js");
 
 module.exports = {
   data: new SlashCommandBuilder().setName("help").setDescription("Get the list of current commands."),
@@ -8,19 +9,93 @@ module.exports = {
   async execute(interaction, args, client) {
     let helpDesc = `These are the current commands available for use!`;
 
+    exclusions = ["help"];
+
+    var pages = {};
+    var c = 0;
+    pages[c] = [];
+    var charCount = 0; //each embed can only have 1024 chars max
     client.commands.forEach((value, key) => {
-      if (key != "help") helpDesc += `\n\n **/${key}** ${value.options} \n ${value.data.description}`;
+      if (!exclusions.includes(key)) {
+        if (charCount > 400) {
+          c += 1;
+          pages[c] = [];
+          charCount = 0;
+        }
+
+        pages[c].push(`**/${key}** ${value.options} \n ${value.data.description}`);
+        charCount += key.length + value.options.length + value.data.description.length + 10;
+      }
     });
 
-    let embed = new Discord.MessageEmbed()
-      .setTitle("Help | Active Commands")
-      .setDescription(helpDesc)
-      .setFooter({
-        text: "Created with ❤️ by ben#0673",
-      })
-      .setColor(botconfig.COLOR_SCHEME)
-      .setTimestamp();
+    var embeds = [];
+    for (var i = 0; i < Object.keys(pages).length; i++) {
+      let embed = new Discord.MessageEmbed()
+        .setColor(botconfig.COLOR_SCHEME)
+        .setTitle(`Active Commands | Page ${i + 1}`)
+        .addField("Active Commands: ", pages[i].join("\n\n"))
+        .setFooter({
+          text: "Created with ❤️ by ben#0673 | Buttons stop working after 1 minute.",
+        });
 
-    return interaction.reply({ embeds: [embed], ephemeral: true });
+      embeds.push(embed);
+    }
+
+    const nextBtn = new MessageButton().setLabel("Next").setCustomId("help_next").setStyle("PRIMARY");
+    const prevBtn = new MessageButton().setLabel("Prev").setCustomId("help_prev").setStyle("PRIMARY");
+    prevBtn.disabled = true;
+
+    const row = new MessageActionRow().addComponents(prevBtn, nextBtn);
+
+    var currInd = 0;
+    const author = interaction.user;
+    await interaction.reply({ embeds: [embeds[0]], ephemeral: true });
+
+    if (currInd >= embeds.length) return;
+
+    const filter = (btn) => {
+      return author.id === btn.user.id;
+    };
+
+    const collector = interaction.channel.createMessageComponentCollector({
+      filter,
+      time: 90000,
+    });
+
+    collector.on("collect", async (btn) => {
+      //console.log(btn.customId)
+      const id = btn.customId;
+      if (id === "help_next") {
+        prevBtn.disabled = false;
+        currInd++;
+        let embed = embeds[currInd];
+
+        if (currInd + 1 == embeds.length) {
+          nextBtn.disabled = true;
+        } else {
+          nextBtn.disabled = false;
+        }
+        const row = new MessageActionRow().addComponents(prevBtn, nextBtn);
+        await interaction.editReply({
+          components: [row],
+          embeds: [embed],
+        });
+      } else if (id === "help_prev") {
+        nextBtn.disabled = false;
+        currInd--;
+        let embed = embeds[currInd];
+
+        if (currInd === 0) {
+          prevBtn.disabled = true;
+        }
+        const row = new MessageActionRow().addComponents(prevBtn, nextBtn);
+        await interaction.editReply({
+          components: [row],
+          embeds: [embed],
+        });
+      }
+
+      btn.deferUpdate();
+    });
   },
 };
