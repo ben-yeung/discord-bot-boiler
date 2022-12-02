@@ -49,7 +49,7 @@ module.exports = {
 
     var currInd = 0;
     const author = interaction.user;
-    await interaction.reply({ embeds: [embeds[0]], ephemeral: true });
+    await interaction.reply({ embeds: [embeds[0]], components: [row], ephemeral: true });
 
     if (currInd >= embeds.length) return;
 
