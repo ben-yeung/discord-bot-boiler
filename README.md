@@ -1,3 +1,7 @@
+**Make sure to update .gitignore to ignore src/botconfig.json if you push to a public repo**
+
+It is currently ommitted to see the config bare bones necessary to launch (token, client/guild id, etc)
+
 # discord-bot-boiler
 
 [![Discord.js](https://img.shields.io/badge/discord.js-v13-blue?style=for-the-badge&logo=discord)](https://www.npmjs.com/package/discord.js)
