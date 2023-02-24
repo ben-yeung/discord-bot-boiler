@@ -1,7 +1,7 @@
 const Discord = require("discord.js");
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const botconfig = require("../botconfig.json");
-const { MessageButton, MessageActionRow } = require("discord.js");
+const { ButtonBuilder, ActionRowBuilder } = require("discord.js");
 
 module.exports = {
   data: new SlashCommandBuilder().setName("help").setDescription("Get the list of current commands."),
@@ -9,7 +9,7 @@ module.exports = {
   async execute(interaction, args, client) {
     let helpDesc = `These are the current commands available for use!`;
 
-    exclusions = ["help"];
+    exclusions = ["help", "modclear", "say"];
 
     var pages = {};
     var c = 0;
@@ -30,22 +30,22 @@ module.exports = {
 
     var embeds = [];
     for (var i = 0; i < Object.keys(pages).length; i++) {
-      let embed = new Discord.MessageEmbed()
+      let embed = new Discord.EmbedBuilder()
         .setColor(botconfig.COLOR_SCHEME)
         .setTitle(`Active Commands | Page ${i + 1}`)
-        .addField("Active Commands: ", pages[i].join("\n\n"))
+        .setDescription(pages[i].join("\n\n"))
         .setFooter({
-          text: "Created with ❤️ by ben#0673 | Buttons stop working after 1 minute.",
+          text: "Created with ❤️ by ben.#0673",
         });
 
       embeds.push(embed);
     }
 
-    const nextBtn = new MessageButton().setLabel("Next").setCustomId("help_next").setStyle("PRIMARY");
-    const prevBtn = new MessageButton().setLabel("Prev").setCustomId("help_prev").setStyle("PRIMARY");
+    const nextBtn = new ButtonBuilder().setLabel("Next").setCustomId("help_next").setStyle("Primary");
+    const prevBtn = new ButtonBuilder().setLabel("Prev").setCustomId("help_prev").setStyle("Primary");
     prevBtn.disabled = true;
 
-    const row = new MessageActionRow().addComponents(prevBtn, nextBtn);
+    const row = new ActionRowBuilder().addComponents(prevBtn, nextBtn);
 
     var currInd = 0;
     const author = interaction.user;
@@ -75,7 +75,7 @@ module.exports = {
         } else {
           nextBtn.disabled = false;
         }
-        const row = new MessageActionRow().addComponents(prevBtn, nextBtn);
+        const row = new ActionRowBuilder().addComponents(prevBtn, nextBtn);
         await interaction.editReply({
           components: [row],
           embeds: [embed],
@@ -88,7 +88,7 @@ module.exports = {
         if (currInd === 0) {
           prevBtn.disabled = true;
         }
-        const row = new MessageActionRow().addComponents(prevBtn, nextBtn);
+        const row = new ActionRowBuilder().addComponents(prevBtn, nextBtn);
         await interaction.editReply({
           components: [row],
           embeds: [embed],

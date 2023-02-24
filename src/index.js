@@ -1,11 +1,19 @@
-const { Client, Intents, Collection } = require("discord.js");
+const { Client, GatewayIntentBits, Collection } = require("discord.js");
+const { ButtonBuilder, ActionRowBuilder } = require("discord.js");
+const Discord = require("discord.js");
 const botconfig = require("./botconfig.json");
 const token = botconfig.TOKEN; // Discord Bot Token
 const { initializeCommands } = require("./deploy");
 
-const client = new Client({
-  intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MESSAGE_REACTIONS, Intents.FLAGS.GUILD_PRESENCES],
+const client = new Discord.Client({
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.GuildVoiceStates,
+    GatewayIntentBits.MessageContent,
+  ],
 });
+
 client.commands = new Collection();
 
 client.on("interactionCreate", async (interaction) => {
@@ -16,7 +24,8 @@ client.on("interactionCreate", async (interaction) => {
   if (command.permission) {
     const user = interaction.member;
     const userPerms = interaction.channel.permissionsFor(user);
-    if (!userPerms || !userPerms.has(command.permission)) return interaction.reply("You do not have the permissions to use this command :(");
+    if (!userPerms || !userPerms.has(command.permission))
+      return interaction.reply("You do not have the permissions to use this command :(");
   }
 
   try {
